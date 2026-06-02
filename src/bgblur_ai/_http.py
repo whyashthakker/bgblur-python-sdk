@@ -12,6 +12,7 @@ import httpx
 
 from bgblur_ai.exceptions import (
     AuthenticationError,
+    InsufficientCreditsError,
     PrivacyBlurError,
     RateLimitError,
     ServerError,
@@ -179,6 +180,11 @@ class APIClient:
         if status_code < 400:
             return
 
+        if _is_insufficient_credits(response):
+            raise InsufficientCreditsError(
+                "Not enough credits to process this request. Buy more credits at https://www.bgblur.com/en/pricing"
+            )
+
         message = _extract_error_message(response)
         if status_code in (401, 403):
             raise AuthenticationError(message)
@@ -202,6 +208,24 @@ def _extract_nested_value(payload: dict[str, Any], candidates: tuple[str, ...]) 
         if found and current not in (None, ""):
             return current
     return None
+
+
+def _is_insufficient_credits(response: httpx.Response) -> bool:
+    if response.status_code == 402:
+        return True
+
+    try:
+        payload = response.json()
+    except json.JSONDecodeError:
+        return False
+
+    if not isinstance(payload, dict):
+        return False
+
+    code = _extract_nested_value(payload, ("error.code", "code"))
+    message = _extract_nested_value(payload, ("error.message", "message", "detail"))
+    normalized = " ".join(str(value).lower() for value in (code, message) if value)
+    return "insufficient_credits" in normalized or "not enough credits" in normalized
 
 
 def _extract_error_message(response: httpx.Response) -> str:

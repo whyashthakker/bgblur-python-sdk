@@ -9,6 +9,10 @@ class AuthenticationError(PrivacyBlurError):
     """Raised when the API rejects the supplied credentials."""
 
 
+class InsufficientCreditsError(PrivacyBlurError):
+    """Raised when the account does not have enough credits."""
+
+
 class RateLimitError(PrivacyBlurError):
     """Raised when the API rate limit is exceeded."""
 

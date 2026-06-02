@@ -6,7 +6,14 @@ from pathlib import Path
 import httpx
 import pytest
 
-from bgblur_ai import AuthenticationError, PrivacyBlur, PrivacyBlurError, RateLimitError, ServerError
+from bgblur_ai import (
+    AuthenticationError,
+    InsufficientCreditsError,
+    PrivacyBlur,
+    PrivacyBlurError,
+    RateLimitError,
+    ServerError,
+)
 
 
 def _build_transport(
@@ -162,6 +169,28 @@ def test_http_errors_are_normalized(
     )
 
     with pytest.raises(expected_exception):
+        client.license_plate_blur(input=input_path, output=tmp_path / "output.jpg")
+
+
+def test_insufficient_credits_error_has_pricing_url(tmp_path: Path) -> None:
+    input_path = tmp_path / "input.jpg"
+    input_path.write_bytes(b"raw")
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/api/v1/uploads/image":
+            return httpx.Response(402, json={"error": {"code": "insufficient_credits", "message": "Not enough credits"}})
+        return httpx.Response(404, json={"message": "not found"})
+
+    client = PrivacyBlur(
+        api_key="test-key",
+        base_url="https://www.bgblur.com",
+        http_client=httpx.Client(
+            base_url="https://www.bgblur.com",
+            transport=httpx.MockTransport(handler),
+        ),
+    )
+
+    with pytest.raises(InsufficientCreditsError, match="https://www.bgblur.com/en/pricing"):
         client.license_plate_blur(input=input_path, output=tmp_path / "output.jpg")
 
 
