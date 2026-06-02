@@ -28,7 +28,7 @@ class APIClient:
         config: ClientConfig,
         progress: ProgressReporter,
         http_client: httpx.Client | None = None,
-        ) -> None:
+    ) -> None:
         self._config = config
         self._progress = progress
         self._owns_client = http_client is None
@@ -67,6 +67,7 @@ class APIClient:
             upload_url=str(upload_url),
             media_url=str(media_url),
             media_kind=media_kind,
+            upload_object_url=str(upload_url).split("?", 1)[0],
         )
 
     def upload_file(self, file_path: Path, target: UploadTarget) -> str:
@@ -82,7 +83,7 @@ class APIClient:
             )
         if response.status_code >= 400:
             self._raise_for_status(response)
-        return target.media_url
+        return target.upload_object_url or target.media_url
 
     def submit_operation(self, endpoint: str, payload: dict[str, Any]) -> dict[str, Any]:
         """Submit a public API operation request and return the response payload."""
@@ -204,17 +205,60 @@ def _extract_nested_value(payload: dict[str, Any], candidates: tuple[str, ...]) 
 
 
 def _extract_error_message(response: httpx.Response) -> str:
-    default = f"API request failed with status {response.status_code}."
+    request = response.request
+    parts = [
+        f"API request failed with status {response.status_code}",
+        f"{request.method} {response.url}",
+    ]
+
+    request_id = _extract_request_id(response)
+    if request_id:
+        parts.append(f"request_id={request_id}")
+
     try:
         payload = response.json()
     except json.JSONDecodeError:
-        return response.text.strip() or default
+        body = response.text.strip()
+        if body:
+            parts.append(f"body={body[:1000]}")
+        return "; ".join(parts) + "."
 
     if isinstance(payload, dict):
-        message = _extract_nested_value(payload, ("message", "error.message", "detail", "error"))
+        message = _extract_nested_value(
+            payload,
+            (
+                "message",
+                "error.message",
+                "error_description",
+                "detail",
+                "error",
+                "code",
+            ),
+        )
         if message:
-            return str(message)
-    return default
+            parts.append(f"message={message}")
+        error_code = _extract_nested_value(payload, ("error.code", "code"))
+        if error_code and str(error_code) != str(message):
+            parts.append(f"code={error_code}")
+        parts.append(f"response={json.dumps(payload, separators=(',', ':'))[:1000]}")
+        return "; ".join(parts) + "."
+
+    parts.append(f"response={payload!r}")
+    return "; ".join(parts) + "."
+
+
+def _extract_request_id(response: httpx.Response) -> str | None:
+    for header in (
+        "x-request-id",
+        "x-vercel-id",
+        "cf-ray",
+        "x-amz-request-id",
+        "x-amz-id-2",
+    ):
+        value = response.headers.get(header)
+        if value:
+            return value
+    return None
 
 
 def _guess_content_type(file_path: Path, media_kind: str) -> str:

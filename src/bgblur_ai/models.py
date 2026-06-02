@@ -45,6 +45,7 @@ class UploadTarget:
     upload_url: str
     media_url: str
     media_kind: str
+    upload_object_url: str | None = None
 
 
 PathLike = str | Path

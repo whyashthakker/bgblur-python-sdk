@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import httpx
@@ -18,6 +19,7 @@ def _build_transport(
     status_iter = iter(job_statuses or ["completed"])
     seen_upload_auth_headers: list[str | None] = []
     seen_download_auth_headers: list[str | None] = []
+    seen_submitted_image_urls: list[str] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == f"/api/v1/uploads/{media_kind}" and request.method == "POST":
@@ -32,6 +34,8 @@ def _build_transport(
             seen_upload_auth_headers.append(request.headers.get("Authorization"))
             return httpx.Response(200, text="")
         if request.url.path == "/api/v1/images/face-blur" and request.method == "POST":
+            submitted = json.loads(request.content)
+            seen_submitted_image_urls.append(submitted["image_url"])
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
         if request.url.path == "/api/v1/images/license-plate-blur" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
@@ -65,6 +69,7 @@ def _build_transport(
     transport = httpx.MockTransport(handler)
     transport.seen_upload_auth_headers = seen_upload_auth_headers  # type: ignore[attr-defined]
     transport.seen_download_auth_headers = seen_download_auth_headers  # type: ignore[attr-defined]
+    transport.seen_submitted_image_urls = seen_submitted_image_urls  # type: ignore[attr-defined]
     return transport
 
 
@@ -90,6 +95,7 @@ def test_face_blur_downloads_processed_file(tmp_path: Path) -> None:
     assert output_path.read_bytes() == b"processed"
     assert transport.seen_upload_auth_headers == [None]  # type: ignore[attr-defined]
     assert transport.seen_download_auth_headers == [None]  # type: ignore[attr-defined]
+    assert transport.seen_submitted_image_urls == ["https://uploads.example.com/presigned"]  # type: ignore[attr-defined]
 
 
 def test_blur_anything_requires_prompt(tmp_path: Path) -> None:
