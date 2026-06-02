@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "privacyblur"
+version = "0.1.0"
+description = "Python SDK for the PrivacyBlur/BGBlur API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "PrivacyBlur" }
+]
+keywords = ["privacyblur", "sdk", "image", "video", "blur", "anonymization"]
+dependencies = [
+  "httpx>=0.27,<1.0",
+  "tqdm>=4.66,<5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+privacyblur = "privacyblur.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/privacyblur"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
