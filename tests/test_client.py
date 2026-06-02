@@ -16,6 +16,8 @@ def _build_transport(
     download_content: bytes = b"processed",
 ) -> httpx.MockTransport:
     status_iter = iter(job_statuses or ["completed"])
+    seen_upload_auth_headers: list[str | None] = []
+    seen_download_auth_headers: list[str | None] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path == f"/api/v1/uploads/{media_kind}" and request.method == "POST":
@@ -27,6 +29,7 @@ def _build_transport(
                 },
             )
         if request.url.host == "uploads.example.com" and request.method == "PUT":
+            seen_upload_auth_headers.append(request.headers.get("Authorization"))
             return httpx.Response(200, text="")
         if request.url.path == "/api/v1/images/face-blur" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
@@ -55,10 +58,14 @@ def _build_transport(
                 },
             )
         if request.url.host == "files.example.com":
+            seen_download_auth_headers.append(request.headers.get("Authorization"))
             return httpx.Response(200, content=download_content)
         return httpx.Response(404, json={"message": "not found"})
 
-    return httpx.MockTransport(handler)
+    transport = httpx.MockTransport(handler)
+    transport.seen_upload_auth_headers = seen_upload_auth_headers  # type: ignore[attr-defined]
+    transport.seen_download_auth_headers = seen_download_auth_headers  # type: ignore[attr-defined]
+    return transport
 
 
 def test_face_blur_downloads_processed_file(tmp_path: Path) -> None:
@@ -66,13 +73,14 @@ def test_face_blur_downloads_processed_file(tmp_path: Path) -> None:
     output_path = tmp_path / "output.jpg"
     input_path.write_bytes(b"raw")
 
+    transport = _build_transport(media_kind="image")
     client = PrivacyBlur(
         api_key="test-key",
         base_url="https://www.bgblur.com",
         poll_interval=0.0,
         http_client=httpx.Client(
             base_url="https://www.bgblur.com",
-            transport=_build_transport(media_kind="image"),
+            transport=transport,
         ),
     )
 
@@ -80,6 +88,8 @@ def test_face_blur_downloads_processed_file(tmp_path: Path) -> None:
 
     assert result == output_path
     assert output_path.read_bytes() == b"processed"
+    assert transport.seen_upload_auth_headers == [None]  # type: ignore[attr-defined]
+    assert transport.seen_download_auth_headers == [None]  # type: ignore[attr-defined]
 
 
 def test_blur_anything_requires_prompt(tmp_path: Path) -> None:

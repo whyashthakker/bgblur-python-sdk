@@ -28,9 +28,10 @@ class APIClient:
         config: ClientConfig,
         progress: ProgressReporter,
         http_client: httpx.Client | None = None,
-    ) -> None:
+        ) -> None:
         self._config = config
         self._progress = progress
+        self._owns_client = http_client is None
         self._client = http_client or httpx.Client(
             base_url=config.base_url.rstrip("/"),
             timeout=config.timeout,
@@ -43,7 +44,8 @@ class APIClient:
 
     def close(self) -> None:
         """Close the underlying HTTP client."""
-        self._client.close()
+        if self._owns_client:
+            self._client.close()
 
     def create_upload_target(self, file_path: Path, media_kind: str) -> UploadTarget:
         """Create a presigned upload target for an image or video."""
@@ -76,6 +78,7 @@ class APIClient:
                 target.upload_url,
                 content=handle.read(),
                 headers={"Content-Type": _guess_content_type(file_path, target.media_kind)},
+                include_auth=False,
             )
         if response.status_code >= 400:
             self._raise_for_status(response)
@@ -95,22 +98,41 @@ class APIClient:
         """Download a processed file to the destination path."""
         self._progress.emit(ProgressEvent(stage="download", message=f"Saving to {destination}"))
         destination.parent.mkdir(parents=True, exist_ok=True)
-        with self._client.stream("GET", url) as response:
+        response = self.request("GET", url, stream=True, include_auth=False)
+        try:
             self._raise_for_status(response)
             with destination.open("wb") as handle:
                 for chunk in response.iter_bytes():
                     handle.write(chunk)
+        finally:
+            response.close()
         return destination
 
     def request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         """Send an HTTP request with bounded retries for transient failures."""
+        include_auth = kwargs.pop("include_auth", True)
+        stream = kwargs.pop("stream", False)
         attempts = self._config.retry.max_attempts
         last_error: Exception | None = None
 
         for attempt in range(1, attempts + 1):
             try:
-                response = self._client.request(method, url, **kwargs)
+                request_kwargs = kwargs.copy()
+                request_headers = dict(request_kwargs.pop("headers", {}) or {})
+                if request_headers:
+                    request_kwargs["headers"] = request_headers
+
+                request = self._client.build_request(method, url, **request_kwargs)
+                if not include_auth and "Authorization" in request.headers:
+                    del request.headers["Authorization"]
+
+                if stream:
+                    response = self._client.send(request, stream=True)
+                else:
+                    response = self._client.send(request)
                 if response.status_code in self._config.retry.retryable_status_codes and attempt < attempts:
+                    if stream:
+                        response.close()
                     self._progress.emit(
                         ProgressEvent(
                             stage="retry",
