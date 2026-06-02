@@ -55,21 +55,6 @@ dist/bgblur_ai-0.1.1.tar.gz
 twine check dist/*
 ```
 
-## Optional TestPyPI Publish
-
-```bash
-twine upload --repository testpypi dist/*
-```
-
-Install from TestPyPI in a clean environment:
-
-```bash
-python3 -m venv /tmp/bgblur-test
-source /tmp/bgblur-test/bin/activate
-pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple bgblur-ai
-python -c "from bgblur_ai import PrivacyBlur; print(PrivacyBlur)"
-```
-
 ## Publish To PyPI
 
 ```bash

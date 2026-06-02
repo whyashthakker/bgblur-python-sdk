@@ -228,7 +228,7 @@ def _build_public_api_request(
     if media_kind == "image":
         if operation == "face_blur":
             return (
-                "/api/v1/images/face-blur",
+                "/api/v2/images/face-blur",
                 {
                     "image_url": media_url,
                     "blur_strength": blur_strength,
@@ -237,7 +237,7 @@ def _build_public_api_request(
             )
         if operation == "license_plate_blur":
             return (
-                "/api/v1/images/license-plate-blur",
+                "/api/v2/images/license-plate-blur",
                 {
                     "image_url": media_url,
                     "blur_strength": blur_strength,
@@ -246,7 +246,7 @@ def _build_public_api_request(
             )
         if operation == "blur_anything":
             return (
-                "/api/v1/images/blur-anything",
+                "/api/v2/images/blur-anything",
                 {
                     "image_url": media_url,
                     "prompt": options["prompt"],
@@ -258,7 +258,7 @@ def _build_public_api_request(
 
     if operation == "face_blur":
         return (
-            "/api/v1/videos/face-blur",
+            "/api/v2/videos/face-blur",
             {
                 "video_url": media_url,
                 "blur_strength": blur_strength,
@@ -267,7 +267,7 @@ def _build_public_api_request(
         )
     if operation == "license_plate_blur":
         return (
-            "/api/v1/videos/license-plate-blur",
+            "/api/v2/videos/license-plate-blur",
             {
                 "video_url": media_url,
                 "blur_strength": blur_strength,
@@ -276,7 +276,7 @@ def _build_public_api_request(
         )
     if operation == "blur_anything":
         return (
-            "/api/v1/videos/blur-anything",
+            "/api/v2/videos/blur-anything",
             {
                 "video_url": media_url,
                 "prompt": options["prompt"],
@@ -286,7 +286,7 @@ def _build_public_api_request(
         )
     if operation == "face_anonymize":
         return (
-            "/api/v1/videos/face-anonymization",
+            "/api/v2/videos/face-anonymization",
             {
                 "video_url": media_url,
             },

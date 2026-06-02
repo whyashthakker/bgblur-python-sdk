@@ -258,5 +258,5 @@ class DatasetProcessor:
         if plate_mode == "replace":
             raise PrivacyBlurError(
                 "plate_mode='replace' is not exposed by the current public BGBlur API. "
-                "The public SDK can only use the routes available on https://www.bgblur.com/api/v1."
+                "The public SDK can only use the routes available on https://www.bgblur.com/api/v2."
             )

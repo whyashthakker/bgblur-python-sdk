@@ -52,7 +52,7 @@ class APIClient:
         """Create a presigned upload target for an image or video."""
         response = self.request(
             "POST",
-            f"/api/v1/uploads/{media_kind}",
+            f"/api/v2/uploads/{media_kind}",
             json={
                 "file_name": file_path.name,
                 "file_type": _guess_content_type(file_path, media_kind),
@@ -93,7 +93,7 @@ class APIClient:
 
     def get_job(self, job_id: str) -> dict[str, Any]:
         """Fetch the latest job status payload."""
-        response = self.request("GET", f"/api/v1/jobs/{job_id}")
+        response = self.request("GET", f"/api/v2/jobs/{job_id}")
         return self._json(response)
 
     def download_file(self, url: str, destination: Path) -> Path:

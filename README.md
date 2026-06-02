@@ -6,26 +6,6 @@ Official Python SDK and CLI for [BGBlur.com](https://www.bgblur.com), an AI visu
 
 BGBlur.com helps creators, developers, businesses, and AI teams protect visual privacy in photos and videos. It is built for workflows where faces, license plates, people, vehicles, backgrounds, or sensitive objects need to be blurred before sharing, publishing, reviewing, or using media in datasets.
 
-## What You Can Do
-
-- Blur faces in images and videos for privacy protection.
-- Anonymize faces in videos for identity protection.
-- Blur license plates in vehicle images, dashcam footage, CCTV, and street scenes.
-- Blur custom objects with a text prompt using BGBlur's blur-anything workflow.
-- Prepare privacy-safe datasets for AI training, computer vision, and content review.
-- Automate video redaction and image redaction from Python or the `bgblur-ai` CLI.
-
-## Why BGBlur.com
-
-BGBlur.com focuses on practical visual privacy automation. Manual video redaction and image editing can be slow, repetitive, and hard to scale. BGBlur helps teams process privacy-sensitive media faster by combining AI face blur, license plate blur, prompt-based object blur, and video anonymization in one platform.
-
-Common use cases include:
-
-- Privacy-safe social media publishing.
-- CCTV, dashcam, bodycam, and street footage redaction.
-- AI dataset anonymization before model training.
-- Customer support, legal, security, and compliance media review.
-- Creator, journalist, researcher, and business privacy workflows.
 
 ## Installation
 
@@ -182,6 +162,27 @@ except InsufficientCreditsError as exc:
 except PrivacyBlurError as exc:
     print(f"BGBlur error: {exc}")
 ```
+
+## What You Can Do
+
+- Blur faces in images and videos for privacy protection.
+- Anonymize faces in videos for identity protection.
+- Blur license plates in vehicle images, dashcam footage, CCTV, and street scenes.
+- Blur custom objects with a text prompt using BGBlur's blur-anything workflow.
+- Prepare privacy-safe datasets for AI training, computer vision, and content review.
+- Automate video redaction and image redaction from Python or the `bgblur-ai` CLI.
+
+## Why BGBlur.com
+
+BGBlur.com focuses on practical visual privacy automation. Manual video redaction and image editing can be slow, repetitive, and hard to scale. BGBlur helps teams process privacy-sensitive media faster by combining AI face blur, license plate blur, prompt-based object blur, and video anonymization in one platform.
+
+Common use cases include:
+
+- Privacy-safe social media publishing.
+- CCTV, dashcam, bodycam, and street footage redaction.
+- AI dataset anonymization before model training.
+- Customer support, legal, security, and compliance media review.
+- Creator, journalist, researcher, and business privacy workflows.
 
 ## Keywords
 

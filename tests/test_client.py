@@ -29,7 +29,7 @@ def _build_transport(
     seen_submitted_image_urls: list[str] = []
 
     def handler(request: httpx.Request) -> httpx.Response:
-        if request.url.path == f"/api/v1/uploads/{media_kind}" and request.method == "POST":
+        if request.url.path == f"/api/v2/uploads/{media_kind}" and request.method == "POST":
             return httpx.Response(
                 200,
                 json={
@@ -40,23 +40,23 @@ def _build_transport(
         if request.url.host == "uploads.example.com" and request.method == "PUT":
             seen_upload_auth_headers.append(request.headers.get("Authorization"))
             return httpx.Response(200, text="")
-        if request.url.path == "/api/v1/images/face-blur" and request.method == "POST":
+        if request.url.path == "/api/v2/images/face-blur" and request.method == "POST":
             submitted = json.loads(request.content)
             seen_submitted_image_urls.append(submitted["image_url"])
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
-        if request.url.path == "/api/v1/images/license-plate-blur" and request.method == "POST":
+        if request.url.path == "/api/v2/images/license-plate-blur" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
-        if request.url.path == "/api/v1/images/blur-anything" and request.method == "POST":
+        if request.url.path == "/api/v2/images/blur-anything" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "completed", "output_url": "https://files.example.com/output.jpg"})
-        if request.url.path == "/api/v1/videos/face-blur" and request.method == "POST":
+        if request.url.path == "/api/v2/videos/face-blur" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "queued", "job_id": "job_123"})
-        if request.url.path == "/api/v1/videos/license-plate-blur" and request.method == "POST":
+        if request.url.path == "/api/v2/videos/license-plate-blur" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "queued", "job_id": "job_123"})
-        if request.url.path == "/api/v1/videos/blur-anything" and request.method == "POST":
+        if request.url.path == "/api/v2/videos/blur-anything" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "queued", "job_id": "job_123"})
-        if request.url.path == "/api/v1/videos/face-anonymization" and request.method == "POST":
+        if request.url.path == "/api/v2/videos/face-anonymization" and request.method == "POST":
             return httpx.Response(200, json={"success": True, "status": "queued", "job_id": "job_123"})
-        if request.url.path == "/api/v1/jobs/job_123":
+        if request.url.path == "/api/v2/jobs/job_123":
             status = next(status_iter)
             if status == "failed":
                 return httpx.Response(200, json={"success": True, "status": "failed", "message": "GPU failure"})
@@ -155,7 +155,7 @@ def test_http_errors_are_normalized(
     input_path.write_bytes(b"raw")
 
     def handler(request: httpx.Request) -> httpx.Response:
-        if request.url.path == "/api/v1/uploads/image":
+        if request.url.path == "/api/v2/uploads/image":
             return httpx.Response(status_code, json={"message": "boom"})
         return httpx.Response(404, json={"message": "not found"})
 
@@ -177,7 +177,7 @@ def test_insufficient_credits_error_has_pricing_url(tmp_path: Path) -> None:
     input_path.write_bytes(b"raw")
 
     def handler(request: httpx.Request) -> httpx.Response:
-        if request.url.path == "/api/v1/uploads/image":
+        if request.url.path == "/api/v2/uploads/image":
             return httpx.Response(402, json={"error": {"code": "insufficient_credits", "message": "Not enough credits"}})
         return httpx.Response(404, json={"message": "not found"})
 
