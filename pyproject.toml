@@ -26,6 +26,12 @@ dev = [
 [project.scripts]
 bgblur-ai = "bgblur_ai.cli:main"
 
+[tool.hatch.build]
+exclude = [
+  "**/__pycache__",
+  "**/*.pyc",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/bgblur_ai"]
 
