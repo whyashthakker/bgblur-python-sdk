@@ -1,4 +1,4 @@
-"""Exception types raised by the privacyblur SDK."""
+"""Exception types raised by the bgblur_ai SDK."""
 
 
 class PrivacyBlurError(Exception):

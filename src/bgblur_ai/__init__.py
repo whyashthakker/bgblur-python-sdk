@@ -1,8 +1,8 @@
-"""Public package exports for the privacyblur SDK."""
+"""Public package exports for the bgblur_ai SDK."""
 
-from privacyblur.client import PrivacyBlur
-from privacyblur.dataset import DatasetProcessor, DatasetProcessReport
-from privacyblur.exceptions import (
+from bgblur_ai.client import PrivacyBlur
+from bgblur_ai.dataset import DatasetProcessor, DatasetProcessReport
+from bgblur_ai.exceptions import (
     AuthenticationError,
     PrivacyBlurError,
     RateLimitError,

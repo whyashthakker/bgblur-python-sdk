@@ -1,4 +1,4 @@
-"""Public client for the privacyblur SDK."""
+"""Public client for the bgblur_ai SDK."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from typing import Any
 
 import httpx
 
-from privacyblur._http import APIClient, _extract_nested_value
-from privacyblur.exceptions import PrivacyBlurError
-from privacyblur.models import ClientConfig, JobResult, PathLike, RetryConfig
-from privacyblur.progress import (
+from bgblur_ai._http import APIClient, _extract_nested_value
+from bgblur_ai.exceptions import PrivacyBlurError
+from bgblur_ai.models import ClientConfig, JobResult, PathLike, RetryConfig
+from bgblur_ai.progress import (
     NullProgressReporter,
     ProgressEvent,
     ProgressReporter,

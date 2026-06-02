@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from privacyblur import DatasetProcessor
+from bgblur_ai import DatasetProcessor
 
 
 class _FakeClient:

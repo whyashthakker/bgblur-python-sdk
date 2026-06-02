@@ -1,17 +1,17 @@
-# privacyblur
+# bgblur-ai
 
-`privacyblur` is a Python SDK and CLI for the BGBlur public API on `https://www.bgblur.com`. It does not run AI processing locally. Files are uploaded through BGBlur's presigned upload API, processing is delegated to the existing backend stack, and results are downloaded automatically.
+`bgblur-ai` is a Python SDK and CLI for the BGBlur public API on `https://www.bgblur.com`. It does not run AI processing locally. Files are uploaded through BGBlur's presigned upload API, processing is delegated to the existing backend stack, and results are downloaded automatically.
 
 ## Installation
 
 ```bash
-pip install privacyblur
+pip install bgblur-ai
 ```
 
 ## Quick start
 
 ```python
-from privacyblur import PrivacyBlur
+from bgblur_ai import PrivacyBlur
 
 client = PrivacyBlur(api_key="YOUR_API_KEY")
 
@@ -37,7 +37,7 @@ client.blur_anything(
     output="result.jpg",
 )
 
-from privacyblur import DatasetProcessor
+from bgblur_ai import DatasetProcessor
 
 processor = DatasetProcessor(api_key="YOUR_API_KEY")
 
@@ -55,22 +55,22 @@ print(report.to_json())
 ## CLI
 
 ```bash
-privacyblur face-blur input.jpg output.jpg --blur-type gaussian
-privacyblur face-anonymize input.mp4 output.mp4
-privacyblur license-plate-blur car.jpg result.jpg
-privacyblur blur-anything image.jpg result.jpg --prompt "person"
-privacyblur dataset-process --input dataset --output dataset_private --face-blur --plate-blur --blur-type pixelated
+bgblur-ai face-blur input.jpg output.jpg --blur-type gaussian
+bgblur-ai face-anonymize input.mp4 output.mp4
+bgblur-ai license-plate-blur car.jpg result.jpg
+bgblur-ai blur-anything image.jpg result.jpg --prompt "person"
+bgblur-ai dataset-process --input dataset --output dataset_private --face-blur --plate-blur --blur-type pixelated
 ```
 
 API key resolution order:
 
 1. `--api-key`
-2. `PRIVACYBLUR_API_KEY`
+2. `BGBLUR_AI_API_KEY`
 
 Base URL resolution order:
 
 1. `--base-url`
-2. `PRIVACYBLUR_BASE_URL`
+2. `BGBLUR_AI_BASE_URL`
 3. `https://www.bgblur.com`
 
 ## API contract

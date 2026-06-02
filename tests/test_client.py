@@ -5,7 +5,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from privacyblur import AuthenticationError, PrivacyBlur, PrivacyBlurError, RateLimitError, ServerError
+from bgblur_ai import AuthenticationError, PrivacyBlur, PrivacyBlurError, RateLimitError, ServerError
 
 
 def _build_transport(

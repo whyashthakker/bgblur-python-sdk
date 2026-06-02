@@ -1,4 +1,4 @@
-"""Internal HTTP transport and response handling for privacyblur."""
+"""Internal HTTP transport and response handling for bgblur_ai."""
 
 from __future__ import annotations
 
@@ -10,14 +10,14 @@ from typing import Any
 
 import httpx
 
-from privacyblur.exceptions import (
+from bgblur_ai.exceptions import (
     AuthenticationError,
     PrivacyBlurError,
     RateLimitError,
     ServerError,
 )
-from privacyblur.models import ClientConfig, UploadTarget
-from privacyblur.progress import ProgressEvent, ProgressReporter
+from bgblur_ai.models import ClientConfig, UploadTarget
+from bgblur_ai.progress import ProgressEvent, ProgressReporter
 
 
 class APIClient:
@@ -37,7 +37,7 @@ class APIClient:
             headers={
                 "Authorization": f"Bearer {config.api_key}",
                 "Accept": "application/json",
-                "User-Agent": "privacyblur-python/0.1.0",
+                "User-Agent": "bgblur-ai-python/0.1.0",
             },
         )
 

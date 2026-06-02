@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from privacyblur.dataset.scanner import DatasetScanner
+from bgblur_ai.dataset.scanner import DatasetScanner
 
 
 def test_dataset_scanner_finds_supported_images_and_passthrough_files(tmp_path: Path) -> None:

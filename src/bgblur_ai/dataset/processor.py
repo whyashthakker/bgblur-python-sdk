@@ -13,10 +13,10 @@ from typing import Callable
 
 from tqdm import tqdm
 
-from privacyblur.client import PrivacyBlur
-from privacyblur.dataset.report import DatasetProcessReport
-from privacyblur.dataset.scanner import DatasetScanner, ScanItem
-from privacyblur.exceptions import PrivacyBlurError
+from bgblur_ai.client import PrivacyBlur
+from bgblur_ai.dataset.report import DatasetProcessReport
+from bgblur_ai.dataset.scanner import DatasetScanner, ScanItem
+from bgblur_ai.exceptions import PrivacyBlurError
 
 
 ClientFactory = Callable[..., PrivacyBlur]
@@ -59,7 +59,7 @@ class DatasetProcessor:
         }
         self._max_workers = max_workers
         self._show_progress = show_progress
-        self._logger = logger or logging.getLogger("privacyblur.dataset")
+        self._logger = logger or logging.getLogger("bgblur_ai.dataset")
         self._scanner = DatasetScanner()
         self._client_factory = client_factory or PrivacyBlur
 
@@ -187,7 +187,7 @@ class DatasetProcessor:
             metrics = {"faces_blurred": 0, "license_plates_blurred": 0, "objects_blurred": 0}
             current_input = item.source_path
 
-            with tempfile.TemporaryDirectory(prefix="privacyblur-dataset-") as temp_dir:
+            with tempfile.TemporaryDirectory(prefix="bgblur-ai-dataset-") as temp_dir:
                 temp_root = Path(temp_dir)
 
                 if face_blur:

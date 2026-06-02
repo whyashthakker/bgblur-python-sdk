@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from privacyblur import cli
+from bgblur_ai import cli
 
 
 def test_cli_face_blur_invokes_client(monkeypatch, tmp_path: Path, capsys) -> None:

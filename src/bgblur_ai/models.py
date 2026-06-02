@@ -1,4 +1,4 @@
-"""Shared type models used by the privacyblur SDK."""
+"""Shared type models used by the bgblur_ai SDK."""
 
 from __future__ import annotations
 

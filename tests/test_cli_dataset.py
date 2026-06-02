@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from privacyblur import cli
+from bgblur_ai import cli
 
 
 def test_cli_dataset_process_invokes_processor(monkeypatch, tmp_path: Path, capsys) -> None:

@@ -1,4 +1,4 @@
-"""Progress reporting utilities for the privacyblur SDK."""
+"""Progress reporting utilities for the bgblur_ai SDK."""
 
 from __future__ import annotations
 
@@ -31,4 +31,4 @@ class StdoutProgressReporter(ProgressReporter):
     """Simple text progress reporter for CLI and interactive use."""
 
     def emit(self, event: ProgressEvent) -> None:
-        print(f"[privacyblur] {event.stage}: {event.message}")
+        print(f"[bgblur-ai] {event.stage}: {event.message}")

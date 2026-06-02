@@ -1,4 +1,4 @@
-"""Command line interface for the privacyblur SDK."""
+"""Command line interface for the bgblur_ai SDK."""
 
 from __future__ import annotations
 
@@ -7,17 +7,17 @@ import os
 import sys
 from pathlib import Path
 
-from privacyblur import DatasetProcessor, PrivacyBlur
-from privacyblur.exceptions import PrivacyBlurError
+from bgblur_ai import DatasetProcessor, PrivacyBlur
+from bgblur_ai.exceptions import PrivacyBlurError
 
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the CLI argument parser."""
-    parser = argparse.ArgumentParser(prog="privacyblur", description="PrivacyBlur API client")
-    parser.add_argument("--api-key", default=os.getenv("PRIVACYBLUR_API_KEY"), help="API key")
+    parser = argparse.ArgumentParser(prog="bgblur-ai", description="BGBlur API client")
+    parser.add_argument("--api-key", default=os.getenv("BGBLUR_AI_API_KEY"), help="API key")
     parser.add_argument(
         "--base-url",
-        default=os.getenv("PRIVACYBLUR_BASE_URL", "https://www.bgblur.com"),
+        default=os.getenv("BGBLUR_AI_BASE_URL", "https://www.bgblur.com"),
         help="API base URL",
     )
     parser.add_argument("--timeout", type=float, default=300.0, help="Per-request timeout in seconds")
@@ -67,17 +67,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run the privacyblur CLI."""
+    """Run the bgblur_ai CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)
 
     if not args.api_key:
-        parser.error("An API key is required. Use --api-key or set PRIVACYBLUR_API_KEY.")
+        parser.error("An API key is required. Use --api-key or set BGBLUR_AI_API_KEY.")
 
     try:
         output_value = args.handler(args)
     except PrivacyBlurError as exc:
-        print(f"privacyblur: {exc}", file=sys.stderr)
+        print(f"bgblur-ai: {exc}", file=sys.stderr)
         return 1
 
     print(output_value)
